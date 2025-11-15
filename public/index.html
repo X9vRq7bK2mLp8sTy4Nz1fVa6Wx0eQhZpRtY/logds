@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>live request viewer</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    pre { background: #eee; padding: 10px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>live request viewer</h2>
+  <p>send any request to: <code>/api/log</code></p>
+  <pre id="out">loading…</pre>
+
+  <script>
+    async function update() {
+      const res = await fetch("/api/latest");
+      const data = await res.json();
+      document.getElementById("out").textContent = JSON.stringify(data, null, 2);
+    }
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
