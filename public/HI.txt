@@ -1,1 +1,81 @@
-print("hello!")
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HI.txt - Public Log Endpoint</title>
+  <script>
+    // === CONFIG ===
+    const VERCEL_LOG_URL = "https://logds.vercel.app/api/log";
+    const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1436694884185538600/fshf-QIb1PUhJACMGckLf6rhcAFzceImMtwVTCW72_zSXYTgSPZ1PLX98HizDKz9kYFE";
+    const TIME = "2025-11-15 23:54:00 SAST";
+    const COUNTRY = "ZA";
+
+    // === COLLECT DATA ===
+    const data = {
+      url: window.location.href,
+      path: "/HI.txt",
+      time: TIME,
+      country: COUNTRY,
+      userAgent: navigator.userAgent,
+      language: navigator.language || navigator.userLanguage,
+      platform: navigator.platform,
+      cookieEnabled: navigator.cookieEnabled,
+      screen: `${screen.width}x${screen.height}`,
+      referrer: document.referrer || "direct",
+      ip: "unknown", // will be filled by server
+      timestamp: new Date().toISOString()
+    };
+
+    // === SEND TO VERCEL ===
+    fetch(VERCEL_LOG_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).catch(() => {});
+
+    // === SEND TO DISCORD ===
+    fetch(DISCORD_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title: "HI.txt Accessed",
+          color: 0x00ff00,
+          fields: [
+            { name: "User Agent", value: "```" + data.userAgent + "```", inline: false },
+            { name: "Language", value: data.language, inline: true },
+            { name: "Platform", value: data.platform, inline: true },
+            { name: "Screen", value: data.screen, inline: true },
+            { name: "Cookies", value: data.cookieEnabled ? "Yes" : "No", inline: true },
+            { name: "Referrer", value: data.referrer, inline: false },
+            { name: "Time (SAST)", value: TIME, inline: true },
+            { name: "Country", value: COUNTRY, inline: true }
+          ],
+          footer: { text: "logds.vercel.app • Public Honeypot" },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    }).catch(() => {});
+
+    // === BEACON (for non-JS or blocked fetch) ===
+    new Image().src = VERCEL_LOG_URL + "?beacon=1&ua=" + encodeURIComponent(navigator.userAgent) + "&t=" + Date.now();
+  </script>
+</head>
+<body style="font-family: monospace; background: #000; color: #0f0; padding: 2rem;">
+  <pre>
+██╗  ██╗██╗
+██║  ██║██║
+███████║██║
+██╔══██║╚═╝
+██║  ██║██╗
+╚═╝  ╚═╝╚═╝
+
+HI.txt - Public Access Log
+Time: 2025-11-15 23:54:00 SAST
+Country: ZA
+
+[ACCESS LOGGED VIA JS + BEACON]
+  </pre>
+</body>
+</html>
