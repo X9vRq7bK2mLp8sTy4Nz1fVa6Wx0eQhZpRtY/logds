@@ -1,12 +1,15 @@
-export default function handler(req, res) {
-  // log to vercel dashboard
-  console.log("incoming request:");
-  console.log(req.method);
-  console.log(req.headers);
+let lastReq = null;
 
-  // also return json to client
-  res.status(200).json({
+export default function handler(req, res) {
+  lastReq = {
+    time: new Date().toISOString(),
     method: req.method,
     headers: req.headers,
-  });
+  };
+
+  res.status(200).json(lastReq);
+}
+
+export function getLastReq() {
+  return lastReq;
 }
